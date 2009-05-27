@@ -8,7 +8,7 @@
     <mx:Label text="Input message" />
     <mx:HBox>
         <mx:TextInput id="msg" styleName="input" />
-        <mx:Button id="sendButton" label="send" click="sendmsg();" />
+        <mx:Button id="sendButton" label="send" click='sendmsg("hello");' />
     </mx:HBox>
     <mx:Label text="Output message from server" />
     <mx:HBox>
@@ -45,6 +45,8 @@ private function init():void {
 	_socket.addEventListener(IOErrorEvent.IO_ERROR , ioErrorHandler , false, 0 );
 	_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR , securityErrorHandler , false, 0 );
     _socket.addEventListener(Event.CLOSE, closeHandler, false, 0);
+    
+    ExternalInterface.addCallback("hogefunc", sendmsg);
 }
     
 private function closeHandler(event:Event):void {
@@ -99,15 +101,14 @@ private function processLine(line:String):void {
     }
 }
 
-private function sendmsg():void {
-    var a:String = msg.text;
-
+private function sendmsg(message:String):void {
     if (_socket.connected) {
-        _socket.writeUTFBytes(msg.text + "\r\n");
+//        _socket.writeUTFBytes(msg.text + "\r\n");
+        _socket.writeUTFBytes(message+ "\r\n");
     } else {
         
     }
-    trace(a);
+    trace(message);
 }
  ]]>
 </mx:Script>
