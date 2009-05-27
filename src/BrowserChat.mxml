@@ -23,6 +23,8 @@ import flash.events.*;
 import flash.errors.*;
 import flash.external.ExternalInterface;
 
+import net.suztomo.Flippr.JSInterface;
+
 private const serverName:String = "localhost";
 private const serverPort:int = 8080;
 
@@ -30,7 +32,13 @@ private var _readBuffer:String = "";
 private var isAvailable:Boolean = ExternalInterface.available;
 
 private var _socket:Socket;
+private var jsi:JSInterface;
 private function init():void {
+    jsi = new JSInterface();
+    if (!jsi.isAvailable) {
+        trace("JS interface is not available");
+     	return;
+    }
 	_socket = new Socket(serverName, serverPort);
 	_socket.addEventListener(Event.CONNECT, connectHandler, false, 0);
 	_socket.addEventListener(ProgressEvent.SOCKET_DATA , socketDataHandler , false , 0 );
@@ -40,6 +48,7 @@ private function init():void {
 }
     
 private function closeHandler(event:Event):void {
+    jsi.sendError(jsi.errorDisconnected);
     trace("Disconnected!");
 }
 
@@ -48,10 +57,12 @@ private function connectHandler(event:Event):void {
 }
 
 private function ioErrorHandler(event:Event):void {
+	jsi.sendError(jsi.errorIOError);
     trace("io error!");
 }
 
 private function securityErrorHandler(event:Event):void {
+	jsi.sendError(jsi.errorSecurityError);
     trace("security error!");
 }
 
@@ -81,7 +92,8 @@ private function socketDataHandler(event:Event):void {
 private function processLine(line:String):void {
     rcv.text = line;
     if (isAvailable) {
-        ExternalInterface.call("Flippr.chat.getMessageHandler", line);
+    	jsi.getMessage(line);
+//        ExternalInterface.call("Flippr.chat.getMessageHandler", line);
     } else {
         trace("External Interface is not available");
     }
