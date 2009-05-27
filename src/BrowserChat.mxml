@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init();">
+<mx:ArrayCollection>
+    
+</mx:ArrayCollection>    
+
+<mx:VBox>
+    <mx:Label text="Input message" />
+    <mx:HBox>
+        <mx:TextInput id="msg" styleName="input" />
+        <mx:Button id="sendButton" label="send" click="sendmsg();" />
+    </mx:HBox>
+    <mx:Label text="Output message from server" />
+    <mx:HBox>
+        <mx:Label id="rcv" text="not yet" />
+    </mx:HBox>
+
+</mx:VBox>
+<mx:Script>
+ <![CDATA[
+import flash.net.Socket;
+import flash.events.*;
+import flash.errors.*;
+import flash.external.ExternalInterface;
+
+private const serverName:String = "localhost";
+private const serverPort:int = 8080;
+
+private var _readBuffer:String = "";
+private var isAvailable:Boolean = ExternalInterface.available;
+
+private var _socket:Socket;
+private function init():void {
+	_socket = new Socket(serverName, serverPort);
+	_socket.addEventListener(Event.CONNECT, connectHandler, false, 0);
+	_socket.addEventListener(ProgressEvent.SOCKET_DATA , socketDataHandler , false , 0 );
+	_socket.addEventListener(IOErrorEvent.IO_ERROR , ioErrorHandler , false, 0 );
+	_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR , securityErrorHandler , false, 0 );
+    _socket.addEventListener(Event.CLOSE, closeHandler, false, 0);
+}
+    
+private function closeHandler(event:Event):void {
+    trace("Disconnected!");
+}
+
+private function connectHandler(event:Event):void {
+    trace("Connected!");
+}
+
+private function ioErrorHandler(event:Event):void {
+    trace("io error!");
+}
+
+private function securityErrorHandler(event:Event):void {
+    trace("security error!");
+}
+
+
+
+private function socketDataHandler(event:Event):void {
+    var readBytes:String;
+    var lines:Array;
+    var message:String;
+    
+    while (_socket.bytesAvailable)
+    {
+        readBytes = _socket.readUTFBytes(_socket.bytesAvailable);
+        _readBuffer = _readBuffer.concat(readBytes);
+    }
+    //trace(readBytes);
+    lines = readBytes.split("\r\n");
+    for (var i:int=0; i<lines.length; ++i) {
+        trace(lines[i]);
+        if (lines[i].length > 2) {
+            message = lines[i];
+            processLine(message);
+        }
+    }
+}
+
+private function processLine(line:String):void {
+    rcv.text = line;
+    if (isAvailable) {
+        ExternalInterface.call("Flippr.chat.getMessageHandler", line);
+    } else {
+        trace("External Interface is not available");
+    }
+}
+
+private function sendmsg():void {
+    var a:String = msg.text;
+
+    if (_socket.connected) {
+        _socket.writeUTFBytes(msg.text + "\r\n");
+    } else {
+        
+    }
+    trace(a);
+}
+ ]]>
+</mx:Script>
+</mx:Application>
