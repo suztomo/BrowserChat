@@ -25,8 +25,8 @@ import flash.external.ExternalInterface;
 
 import net.suztomo.Flippr.JSInterface;
 
-private const serverName:String = "localhost";
-private const serverPort:int = 8080;
+private const serverName:String = "irc.freenode.net";
+private const serverPort:int = 6667;
 
 private var _readBuffer:String = "";
 private var isAvailable:Boolean = ExternalInterface.available;
@@ -46,7 +46,8 @@ private function init():void {
 	_socket.addEventListener(SecurityErrorEvent.SECURITY_ERROR , securityErrorHandler , false, 0 );
     _socket.addEventListener(Event.CLOSE, closeHandler, false, 0);
     
-    ExternalInterface.addCallback("hogefunc", sendmsg);
+    jsi.addCallback("flipprSendMessage", sendmsg);
+    ExternalInterface.call("setFlipprSendMessage");
 }
     
 private function closeHandler(event:Event):void {
