@@ -16,6 +16,7 @@
     </mx:HBox>
 
 </mx:VBox>
+
 <mx:Script>
  <![CDATA[
 import flash.net.Socket;
@@ -25,8 +26,8 @@ import flash.external.ExternalInterface;
 
 import net.suztomo.Flippr.JSInterface;
 
-private const serverName:String = "irc.freenode.net";
-private const serverPort:int = 6667;
+private const serverName:String = "192.168.0.13";
+private const serverPort:int = 1025;
 
 private var _readBuffer:String = "";
 private var isAvailable:Boolean = ExternalInterface.available;

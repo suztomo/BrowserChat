@@ -1,0 +1,14 @@
+Chat server daemon
+Usage:
+  twistd -n -y chatserver.py
+
+ref. http://twistedmatrix.com/projects/core/documentation/examples/
+
+
+
+Socket Policy Server
+Usage:
+  Standalone/flashpolicyd.py --file=flashpolicy.xml
+
+ref. http://www.adobe.com/jp/devnet/flashplayer/articles/socket_policy_files.html
+
